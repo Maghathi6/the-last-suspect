@@ -1,0 +1,160 @@
+/* Additional Game-Specific Styles */
+
+.full-screen-layer {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: var(--bg-base);
+  z-index: 100;
+  display: flex;
+  flex-direction: column;
+  overflow-y: auto;
+}
+
+.center-content {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  flex: 1;
+  padding: 2rem;
+  text-align: center;
+}
+
+/* Modal */
+.modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0,0,0,0.8);
+  z-index: 200;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.modal-content {
+  background: var(--bg-surface);
+  border: 1px solid var(--border-color);
+  padding: 2rem;
+  border-radius: var(--radius-md);
+  max-width: 500px;
+  width: 100%;
+}
+
+/* Campus Map */
+.campus-map {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 1rem;
+  padding: 2rem;
+  position: relative;
+}
+.map-node {
+  background: var(--bg-surface-hover);
+  border: 2px solid var(--border-light);
+  border-radius: var(--radius-md);
+  padding: 1.5rem 1rem;
+  text-align: center;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+.map-node:hover {
+  border-color: var(--accent);
+  transform: translateY(-2px);
+}
+
+/* Suspects */
+.suspect-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+  gap: 1.5rem;
+}
+.suspect-card {
+  text-align: center;
+}
+.suspect-portrait {
+  width: 100%;
+  aspect-ratio: 1;
+  background: #2a2c35;
+  border-radius: var(--radius-sm);
+  margin-bottom: 1rem;
+  border: 1px solid var(--border-light);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 3rem;
+  color: var(--text-secondary);
+}
+
+/* Dialogue */
+.dialogue-panel {
+  background: var(--bg-surface);
+  border: 1px solid var(--border-color);
+  border-radius: var(--radius-md);
+  padding: 2rem;
+  margin-top: 1rem;
+}
+.dialogue-text {
+  font-size: 1.2rem;
+  font-family: var(--font-serif);
+  margin-bottom: 2rem;
+  padding: 1rem;
+  background: rgba(255,255,255,0.02);
+  border-left: 3px solid var(--accent);
+}
+.dialogue-options {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+.dialogue-btn {
+  text-align: left;
+  padding: 1rem;
+  background: var(--bg-base);
+  border: 1px solid var(--border-light);
+  color: var(--text-primary);
+  border-radius: var(--radius-sm);
+  cursor: pointer;
+}
+.dialogue-btn:hover {
+  border-color: var(--accent);
+}
+
+/* Board */
+.board-container {
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+}
+.connection-list {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+.connection-item {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  background: var(--bg-surface);
+  padding: 1rem;
+  border: 1px solid var(--border-light);
+  border-radius: var(--radius-sm);
+}
+
+/* Timeline */
+.timeline-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 1rem;
+  margin-top: 2rem;
+}
+.timeline-col {
+  background: var(--bg-surface);
+  padding: 1rem;
+  border-top: 3px solid var(--accent);
+  border-radius: var(--radius-sm);
+}
