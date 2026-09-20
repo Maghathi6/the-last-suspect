@@ -57,6 +57,18 @@ window.GameApp = {
   getHint: () => {
     state.getHint();
   },
+  openSuspectProfile: (suspectId) => {
+    state.openSuspectProfile(suspectId);
+  },
+  closeSuspectProfile: () => {
+    state.closeSuspectProfile();
+  },
+  toggleMapModal: (show) => {
+    state.toggleMapModal(show);
+  },
+  checkTimelineConsistency: () => {
+    state.checkTimelineConsistency();
+  },
   toggleHowToPlay: (show) => {
     state.toggleHowToPlay(show);
   },

@@ -45,24 +45,19 @@ export function renderInfoPanel() {
       </div>
     </div>
 
-    <!-- RECENT DEDUCTION -->
+    <!-- CONFIRMED DEDUCTIONS -->
     <div class="info-section">
-      <h3 class="info-section-title font-mono">LOGGED DEDUCTIONS (${deductionsCount})</h3>
+      <h3 class="info-section-title font-mono">CONFIRMED DEDUCTIONS (${deductionsCount})</h3>
       <div style="font-size: 0.8rem; color: var(--text-primary); border-left: 2px solid var(--success); padding-left: 0.5rem; line-height: 1.4;">
         ${lastDeduction}
       </div>
     </div>
 
-    <!-- OPEN QUESTIONS -->
-    <div class="info-section">
-      <h3 class="info-section-title font-mono">OPEN QUESTIONS</h3>
-      ${openQuestionsHtml}
-    </div>
-
     <!-- QUICK ACTIONS -->
     <div class="info-section">
-      <h3 class="info-section-title font-mono">QUICK ACTIONS</h3>
-      <button class="btn" style="width: 100%; margin-bottom: 0.5rem; font-size: 0.8rem;" onclick="window.GameApp.navigate('JOURNAL')">DETECTIVE JOURNAL</button>
+      <h3 class="info-section-title font-mono">INVESTIGATION TOOLS</h3>
+      <button class="btn" style="width: 100%; margin-bottom: 0.5rem; font-size: 0.8rem;" onclick="window.GameApp.toggleMapModal(true)">🗺 CAMPUS MAP</button>
+      <button class="btn" style="width: 100%; margin-bottom: 0.5rem; font-size: 0.8rem;" onclick="window.GameApp.navigate('JOURNAL')">📓 DETECTIVE JOURNAL</button>
       <button class="btn btn-primary" style="width: 100%; font-size: 0.85rem; background: var(--error); border-color: var(--error);" onclick="window.GameApp.navigate('ACCUSATION')">TIME TO ACCUSE</button>
     </div>
   `;

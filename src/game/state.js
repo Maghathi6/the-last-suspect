@@ -72,11 +72,6 @@ export const state = {
   activeHintText: null,
   appliedDeductions: new Set(),
   journalDeductions: [],
-  openQuestions: [
-    '? Who was at the Canteen at 4:35 PM?',
-    '? Which suspect fits the Black Cap description?',
-    '? Where was Arun at 4:35 PM?'
-  ],
   timelineGrid: {}, // key: `${suspectId}_${time}` => { status: '?' | '✓' | 'x', locationId: '' }
   historyStack: [], // Array of previous timelineGrid snapshots for Undo
   pendingDeductionPrompt: null, // Prompt object for automatic deduction review
@@ -85,8 +80,22 @@ export const state = {
   timelineCheckResult: null,
   eliminatedBanner: null,
   showMapModal: false,
+  showSuspectProfileModal: false,
+  selectedProfileSuspectId: null,
 
   listeners: [],
+
+  openSuspectProfile(suspectId) {
+    this.selectedProfileSuspectId = suspectId;
+    this.showSuspectProfileModal = true;
+    this.notify();
+  },
+
+  closeSuspectProfile() {
+    this.showSuspectProfileModal = false;
+    this.selectedProfileSuspectId = null;
+    this.notify();
+  },
 
   getCurrentChallenge() {
     return challenges.find(c => c.id === this.currentChallengeId) || challenges[0];
@@ -109,6 +118,8 @@ export const state = {
     this.timelineCheckResult = null;
     this.eliminatedBanner = null;
     this.showMapModal = false;
+    this.showSuspectProfileModal = false;
+    this.selectedProfileSuspectId = null;
     this.caseResolved = false;
     this.accused = null;
     this.accusationFeedback = null;

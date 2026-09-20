@@ -51,8 +51,10 @@ export function renderTimeline() {
         <td style="padding: 0.75rem; border-bottom: 1px solid var(--border-color); vertical-align: middle;">
           <div style="display: flex; justify-content: space-between; align-items: center;">
             <div>
-              <strong style="color: var(--text-primary); font-size: 0.95rem;">${s.name}</strong><br>
-              <span class="font-mono text-muted" style="font-size: 0.75rem;">${s.feature}</span>
+              <button style="background: none; border: none; padding: 0; color: var(--text-primary); font-size: 0.95rem; font-weight: bold; cursor: pointer; text-decoration: underline; text-underline-offset: 3px;" onclick="window.GameApp.openSuspectProfile('${s.id}')" title="Click to view contextual suspect profile">
+                👤 ${s.name}
+              </button><br>
+              <span class="font-mono text-muted" style="font-size: 0.75rem; color: var(--accent);">${s.feature}</span>
             </div>
             <button class="btn" style="font-size: 0.7rem; padding: 0.2rem 0.4rem; margin-left: 0.4rem;" onclick="window.GameApp.checkRouteMovement('${s.id}')">CHECK MOVEMENT</button>
           </div>
@@ -71,14 +73,14 @@ export function renderTimeline() {
     return `
       <button class="btn" style="text-align: left; padding: 0.75rem 0.9rem; font-size: 0.85rem; border-color: ${isApplied ? 'var(--success)' : 'var(--accent)'}; background: ${isApplied ? 'rgba(46,204,113,0.1)' : 'var(--bg-base)'}; opacity: ${isApplied ? '0.65' : '1'};"
               onclick="window.GameApp.selectDeductionOption('${currentClue.id}', '${opt.id}')">
-        ${isApplied ? '✓ [PROCESSED] <s>' + opt.label + '</s>' : '🔎 ' + opt.label}
+        ${isApplied ? '✓ [CONFIRMED] <s>' + opt.label + '</s>' : '🔎 [ACCEPT DEDUCTION] ' + opt.label}
       </button>
     `;
   }).join('');
 
   // Contradiction Alert Box with Undo Button
   const contradictionHtml = state.contradictionWarning ? `
-    <div class="card" style="border-color: var(--error); background: rgba(231,76,60,0.08); margin-bottom: 1.5rem; padding: 1.25rem;">
+    <div class="card" style="border-color: var(--error); background: rgba(231,76,60,0.08); margin-bottom: 1.25rem; padding: 1.25rem;">
       <div style="display: flex; justify-content: space-between; align-items: center;">
         <div>
           <div style="color: var(--error); font-weight: bold; font-size: 1rem;">${state.contradictionWarning}</div>
@@ -96,14 +98,14 @@ export function renderTimeline() {
   // Movement Check Result Box with Movement Deduction prompt
   const reqDed = state.movementCheckResult?.requiredDeduction;
   const movementResultHtml = state.movementCheckResult ? `
-    <div class="card" style="border-color: ${state.movementCheckResult.success ? 'var(--success)' : 'var(--error)'}; background: ${state.movementCheckResult.success ? 'rgba(46,204,113,0.08)' : 'rgba(231,76,60,0.08)'}; margin-bottom: 1.5rem; padding: 1rem;">
+    <div class="card" style="border-color: ${state.movementCheckResult.success ? 'var(--success)' : 'var(--error)'}; background: ${state.movementCheckResult.success ? 'rgba(46,204,113,0.08)' : 'rgba(231,76,60,0.08)'}; margin-bottom: 1.25rem; padding: 1rem;">
       <div style="color: ${state.movementCheckResult.success ? 'var(--success)' : 'var(--error)'}; font-weight: bold; font-size: 0.95rem;">${state.movementCheckResult.message}</div>
       ${reqDed ? `
         <div style="margin-top: 0.75rem; padding: 0.75rem; background: var(--bg-base); border-left: 3px solid var(--accent); border-radius: var(--radius-sm);">
-          <div class="font-mono text-muted" style="font-size: 0.75rem; color: var(--accent); margin-bottom: 0.2rem;">MOVEMENT DEDUCTION</div>
+          <div class="font-mono text-muted" style="font-size: 0.75rem; color: var(--accent); margin-bottom: 0.2rem;">LOGICAL CONSEQUENCE</div>
           <p style="font-size: 0.85rem; color: var(--text-primary); margin-bottom: 0.4rem;">Based on known locations and campus connections (${reqDed.routeText}):</p>
           <p style="font-size: 0.9rem; font-weight: bold; color: var(--success); margin-bottom: 0.5rem;">✓ ${ch.suspects.find(s=>s.id===reqDed.suspectId)?.name} must have been in ${reqDed.locationName} at 4:35 PM.</p>
-          <button class="btn btn-primary" style="font-size: 0.75rem; padding: 0.3rem 0.75rem;" onclick="window.GameApp.addMovementDeduction('${reqDed.suspectId}', '${reqDed.time}', '${reqDed.locationId}')">[ ADD TO TIMELINE ]</button>
+          <button class="btn btn-primary" style="font-size: 0.75rem; padding: 0.3rem 0.75rem;" onclick="window.GameApp.addMovementDeduction('${reqDed.suspectId}', '${reqDed.time}', '${reqDed.locationId}')">[ ACCEPT DEDUCTION ]</button>
         </div>
       ` : ''}
     </div>
@@ -111,7 +113,7 @@ export function renderTimeline() {
 
   // Timeline Check Result Box
   const timelineCheckHtml = state.timelineCheckResult ? `
-    <div class="card" style="border-color: ${state.timelineCheckResult.success ? 'var(--success)' : 'var(--error)'}; background: ${state.timelineCheckResult.success ? 'rgba(46,204,113,0.08)' : 'rgba(231,76,60,0.08)'}; margin-bottom: 1.5rem; padding: 1rem;">
+    <div class="card" style="border-color: ${state.timelineCheckResult.success ? 'var(--success)' : 'var(--error)'}; background: ${state.timelineCheckResult.success ? 'rgba(46,204,113,0.08)' : 'rgba(231,76,60,0.08)'}; margin-bottom: 1.25rem; padding: 1rem;">
       <div style="display: flex; justify-content: space-between; align-items: center;">
         <div style="color: ${state.timelineCheckResult.success ? 'var(--success)' : 'var(--error)'}; font-weight: bold; font-size: 0.95rem;">${state.timelineCheckResult.message}</div>
         ${!state.timelineCheckResult.success ? `<button class="btn" style="font-size: 0.75rem; padding: 0.3rem 0.6rem;" onclick="window.GameApp.navigate('JOURNAL')">[ REVIEW DEDUCTIONS ]</button>` : ''}
@@ -122,8 +124,8 @@ export function renderTimeline() {
   // Pending Implied Deductions Prompt Modal/Drawer
   const prompt = state.pendingDeductionPrompt;
   const promptHtml = prompt ? `
-    <div class="card" style="border-color: var(--accent); background: rgba(205,123,70,0.08); margin-bottom: 1.5rem; padding: 1.25rem;">
-      <div class="font-mono text-muted" style="font-size: 0.75rem; color: var(--accent); margin-bottom: 0.5rem;">NEW AUTOMATIC DEDUCTIONS GENERATED</div>
+    <div class="card" style="border-color: var(--accent); background: rgba(205,123,70,0.08); margin-bottom: 1.25rem; padding: 1.25rem;">
+      <div class="font-mono text-muted" style="font-size: 0.75rem; color: var(--accent); margin-bottom: 0.5rem;">POSSIBLE DEDUCTION</div>
       <p style="font-size: 1rem; color: var(--text-primary); font-weight: bold; margin-bottom: 0.5rem;">${prompt.primaryText}</p>
       <div style="background: rgba(0,0,0,0.2); padding: 0.75rem; border-radius: var(--radius-sm); margin-bottom: 1rem;">
         <p style="font-size: 0.8rem; color: var(--text-secondary); margin-bottom: 0.4rem;">This implies:</p>
@@ -132,7 +134,7 @@ export function renderTimeline() {
         </ul>
       </div>
       <div style="display: flex; gap: 0.75rem;">
-        <button class="btn btn-primary" style="font-size: 0.85rem;" onclick="window.GameApp.acceptPendingDeductions()">[ ADD DEDUCTIONS TO JOURNAL & BOARD ]</button>
+        <button class="btn btn-primary" style="font-size: 0.85rem;" onclick="window.GameApp.acceptPendingDeductions()">[ ACCEPT DEDUCTION ]</button>
         <button class="btn" style="font-size: 0.85rem;" onclick="window.GameApp.dismissPendingDeductions()">DISMISS</button>
       </div>
     </div>
@@ -140,17 +142,17 @@ export function renderTimeline() {
 
   // Elimination Banner
   const eliminationHtml = state.eliminatedBanner ? `
-    <div class="card" style="border-color: var(--success); background: rgba(46,204,113,0.08); margin-bottom: 1.5rem; padding: 1rem; text-align: center;">
+    <div class="card" style="border-color: var(--success); background: rgba(46,204,113,0.08); margin-bottom: 1.25rem; padding: 1rem; text-align: center;">
       <div style="color: var(--success); font-weight: bold; font-size: 1.1rem;">${state.eliminatedBanner}</div>
       <div style="color: var(--text-secondary); font-size: 0.85rem; margin-top: 0.3rem; font-style: italic;">
-        All other suspects have been ruled out for the 4:35 PM theft window. Make your final decision when ready.
+        All other suspects have been ruled out for the theft window. Make your final decision when ready.
       </div>
     </div>
   ` : '';
 
   // Active Hint Card
   const hintHtml = state.activeHintText ? `
-    <div class="card" style="border-color: var(--warning); background: rgba(241,196,15,0.08); margin-bottom: 1.5rem; padding: 1rem;">
+    <div class="card" style="border-color: var(--warning); background: rgba(241,196,15,0.08); margin-bottom: 1.25rem; padding: 1rem;">
       <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.4rem;">
         <strong style="color: var(--warning); font-size: 0.85rem;" class="font-mono">DETECTIVE HINT (${state.hintIndex + 1}/3)</strong>
         <span class="badge badge-warning" style="font-size: 0.7rem;">-10 PTS</span>
@@ -160,46 +162,24 @@ export function renderTimeline() {
   ` : '';
 
   // Campus Map Overlay Modal
-  const mapModalHtml = state.showMapModal ? `
-    <div class="modal-overlay" onclick="window.GameApp.toggleMapModal(false)">
-      <div class="modal-content" style="max-width: 650px; text-align: left;" onclick="event.stopPropagation()">
-        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem; border-bottom: 1px solid var(--border-color); padding-bottom: 0.5rem;">
-          <h3 class="font-serif" style="color: var(--accent);">CAMPUS NETWORK MAP</h3>
-          <button class="btn" onclick="window.GameApp.toggleMapModal(false)">✕ CLOSE</button>
-        </div>
-        
-        <div style="background: rgba(0,0,0,0.25); padding: 1.25rem; border-radius: var(--radius-sm); margin-bottom: 1rem; font-family: var(--font-mono); font-size: 0.85rem; line-height: 1.8;">
-          <div style="color: var(--text-muted); margin-bottom: 0.5rem;">CAMPUS CONNECTIONS (5-MIN MOVES):</div>
-          <div><strong style="color: var(--accent);">Library</strong> ────── <strong style="color: var(--accent);">Main Block</strong> ────── <strong style="color: var(--accent);">Canteen</strong></div>
-          <div style="margin-left: 100px;">│</div>
-          <div style="margin-left: 90px;"><strong style="color: var(--accent);">Computer Lab</strong></div>
-          <div style="margin-left: 100px;">│</div>
-          <div style="margin-left: 90px;"><strong style="color: var(--accent);">Seminar Hall</strong></div>
-        </div>
+  const mapModalHtml = state.showMapModal ? renderCampusMapModal() : '';
 
-        <div style="font-size: 0.8rem; color: var(--text-secondary); line-height: 1.5; margin-bottom: 1.5rem;">
-          <p><strong>DIRECT CONNECTION (──────):</strong> Movement takes 1 timeslot (5 minutes).</p>
-          <p><strong>INDIRECT ROUTE (· · · ·):</strong> Requires passing through intermediate nodes (e.g. Library → Canteen requires Main Block at intermediate timeslot).</p>
-        </div>
-
-        <button class="btn btn-primary" style="width: 100%;" onclick="window.GameApp.toggleMapModal(false)">BACK TO INVESTIGATION</button>
-      </div>
-    </div>
-  ` : '';
+  // Contextual Suspect Profile Modal
+  const suspectModalHtml = state.showSuspectProfileModal ? renderSuspectProfileModal() : '';
 
   return `
     <div>
       <!-- TOP HEADER BAR -->
       <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.25rem;">
         <div>
-          <span class="font-mono text-muted" style="font-size: 0.75rem; color: var(--accent); letter-spacing: 1px;">CASE 01 / INVESTIGATION WORKSPACE</span>
-          <h2 class="font-serif" style="margin-top: 0.1rem; font-size: 1.8rem;">THE LAST SAMOSA</h2>
+          <span class="font-mono text-muted" style="font-size: 0.75rem; color: var(--accent); letter-spacing: 1px;">INVESTIGATION WORKSPACE</span>
+          <h2 class="font-serif" style="margin-top: 0.1rem; font-size: 1.8rem; color: var(--text-primary);">${ch.title.toUpperCase()}</h2>
         </div>
         <div style="display: flex; gap: 0.6rem; align-items: center;">
-          <span class="badge badge-warning" style="font-size: 0.85rem; padding: 0.35rem 0.75rem;">SLEUTH-O-METER: ${state.sleuthScore} PTS</span>
-          <button class="btn" style="font-size: 0.8rem;" onclick="window.GameApp.toggleMapModal(true)">[ CAMPUS MAP ]</button>
-          <button class="btn" style="font-size: 0.8rem;" onclick="window.GameApp.getHint()">[ NEED A HINT? ]</button>
-          <button class="btn" style="font-size: 0.8rem;" onclick="window.GameApp.navigate('JOURNAL')">[ JOURNAL ]</button>
+          <span class="badge badge-warning" style="font-size: 0.85rem; padding: 0.35rem 0.75rem;">SLEUTH SCORE: ${state.sleuthScore} PTS</span>
+          <button class="btn" style="font-size: 0.8rem;" onclick="window.GameApp.toggleMapModal(true)">🗺 CAMPUS MAP</button>
+          <button class="btn" style="font-size: 0.8rem;" onclick="window.GameApp.getHint()">💡 NEED A HINT?</button>
+          <button class="btn" style="font-size: 0.8rem;" onclick="window.GameApp.navigate('JOURNAL')">📓 JOURNAL</button>
           <button class="btn btn-primary" style="font-size: 0.85rem; background: var(--error); border-color: var(--error);" onclick="window.GameApp.navigate('ACCUSATION')">TIME TO ACCUSE &rarr;</button>
         </div>
       </div>
@@ -214,13 +194,16 @@ export function renderTimeline() {
       <!-- DEDUCTION GRID MATRIX (HERO TOOL) -->
       <div class="card" style="padding: 1rem; overflow-x: auto; margin-bottom: 1.25rem; border-color: var(--accent);">
         <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.75rem;">
-          <span class="font-serif" style="font-size: 1.1rem; color: var(--accent);">TIMELINE BOARD</span>
-          <button class="btn btn-primary" style="font-size: 0.75rem; padding: 0.3rem 0.8rem;" onclick="window.GameApp.checkTimelineConsistency()">[ CHECK TIMELINE ]</button>
+          <div>
+            <span class="font-serif" style="font-size: 1.2rem; color: var(--accent);">TIMELINE REASONING BOARD</span>
+            <span class="font-mono text-muted" style="font-size: 0.75rem; margin-left: 0.5rem;">Click cells to cycle: ? → ✓ → ✗</span>
+          </div>
+          <button class="btn btn-primary" style="font-size: 0.8rem; padding: 0.35rem 0.85rem;" onclick="window.GameApp.checkTimelineConsistency()">[ CHECK TIMELINE ]</button>
         </div>
         <table style="width: 100%; border-collapse: collapse;">
           <thead>
             <tr>
-              <th class="font-mono text-muted" style="padding: 0.75rem; text-align: left; border-bottom: 2px solid var(--border-color); width: 230px; font-size: 0.85rem;">SUSPECT</th>
+              <th class="font-mono text-muted" style="padding: 0.75rem; text-align: left; border-bottom: 2px solid var(--border-color); width: 230px; font-size: 0.85rem;">SUSPECT (CLICK NAME FOR PROFILE)</th>
               ${headerCols}
             </tr>
           </thead>
@@ -235,25 +218,118 @@ export function renderTimeline() {
         <!-- CLUE NAV BAR -->
         <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.75rem; border-bottom: 1px solid var(--border-color); padding-bottom: 0.5rem;">
           <button class="btn" style="font-size: 0.75rem; padding: 0.25rem 0.6rem;" ${state.clueIndex === 0 ? 'disabled' : ''} onclick="window.GameApp.prevClue()">&lt; PREVIOUS CLUE</button>
-          <div class="font-mono text-muted" style="font-size: 0.85rem;">CLUE ${state.clueIndex + 1} / ${totalClues}: <strong style="color: var(--accent);">${currentClue.title}</strong></div>
+          <div class="font-mono text-muted" style="font-size: 0.85rem;">CASE EVIDENCE ${state.clueIndex + 1} / ${totalClues}: <strong style="color: var(--accent);">${currentClue.title}</strong></div>
           <button class="btn btn-primary" style="font-size: 0.75rem; padding: 0.25rem 0.6rem;" ${state.clueIndex === totalClues - 1 ? 'disabled' : ''} onclick="window.GameApp.nextClue()">NEXT CLUE &gt;</button>
         </div>
 
-        <!-- CLUE TEXT -->
-        <div style="background: rgba(0,0,0,0.2); padding: 0.85rem; border-radius: var(--radius-sm); margin-bottom: 1rem;">
+        <!-- CLUE TEXT (ACTUAL CASE FACT) -->
+        <div style="background: rgba(0,0,0,0.25); padding: 1rem; border-left: 4px solid var(--accent); border-radius: var(--radius-sm); margin-bottom: 1.25rem;">
+          <div class="font-mono text-muted" style="font-size: 0.7rem; color: var(--accent); margin-bottom: 0.3rem;">CASE FACT / STATEMENT</div>
           <p style="font-size: 1rem; color: var(--text-primary); line-height: 1.5; font-style: italic;">"${currentClue.text}"</p>
         </div>
 
-        <!-- CLICKABLE DEDUCTIONS WITH 🔎 MAGNIFYING GLASS -->
+        <!-- WHAT CAN YOU DEDUCE? -->
         <div>
-          <h4 class="font-mono text-muted" style="font-size: 0.75rem; margin-bottom: 0.5rem; letter-spacing: 0.5px; color: var(--accent);">WHAT CAN THIS TELL US?</h4>
-          <div style="display: flex; flex-direction: column; gap: 0.4rem;">
+          <h4 class="font-mono text-muted" style="font-size: 0.75rem; margin-bottom: 0.6rem; letter-spacing: 0.5px; color: var(--accent);">WHAT CAN YOU DEDUCE FROM THIS CLUE?</h4>
+          <div style="display: flex; flex-direction: column; gap: 0.5rem;">
             ${deductionOptionsHtml}
           </div>
         </div>
       </div>
 
       ${mapModalHtml}
+      ${suspectModalHtml}
+    </div>
+  `;
+}
+
+function renderCampusMapModal() {
+  const ch = state.getCurrentChallenge();
+  return `
+    <div class="modal-overlay" onclick="window.GameApp.toggleMapModal(false)">
+      <div class="modal-content" style="max-width: 680px; text-align: left;" onclick="event.stopPropagation()">
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem; border-bottom: 1px solid var(--border-color); padding-bottom: 0.5rem;">
+          <div>
+            <h3 class="font-serif" style="color: var(--accent); font-size: 1.4rem;">CAMPUS NETWORK MOVEMENT MAP</h3>
+            <span class="font-mono text-muted" style="font-size: 0.75rem;">Graph vertices ($V$) and 5-minute pathway edges ($E$)</span>
+          </div>
+          <button class="btn" onclick="window.GameApp.toggleMapModal(false)">✕ CLOSE</button>
+        </div>
+        
+        <div style="background: rgba(13,17,23,0.9); padding: 1.5rem; border-radius: var(--radius-sm); border: 1px solid var(--border-light); margin-bottom: 1.25rem; font-family: var(--font-mono); font-size: 0.9rem; line-height: 2;">
+          <div style="color: var(--text-muted); font-size: 0.75rem; margin-bottom: 0.75rem;">GRAPH TOPOLOGY (DIRECT PATHWAYS):</div>
+          <div style="display: flex; justify-content: space-between; align-items: center; background: rgba(255,255,255,0.03); padding: 0.75rem; border-radius: var(--radius-sm);">
+            <div style="border: 1px solid var(--accent); padding: 0.3rem 0.6rem; border-radius: 4px; color: var(--accent); font-weight: bold;">Library</div>
+            <div style="color: var(--text-muted);">── (5m) ──</div>
+            <div style="border: 1px solid var(--accent); padding: 0.3rem 0.6rem; border-radius: 4px; color: var(--accent); font-weight: bold;">Main Block</div>
+            <div style="color: var(--text-muted);">── (5m) ──</div>
+            <div style="border: 1px solid var(--accent); padding: 0.3rem 0.6rem; border-radius: 4px; color: var(--accent); font-weight: bold;">Canteen</div>
+          </div>
+          <div style="text-align: center; color: var(--text-muted); margin: 0.25rem 0;">│ (5m)</div>
+          <div style="display: flex; justify-content: center;">
+            <div style="border: 1px solid var(--accent); padding: 0.3rem 0.6rem; border-radius: 4px; color: var(--accent); font-weight: bold;">Computer Lab</div>
+          </div>
+          <div style="text-align: center; color: var(--text-muted); margin: 0.25rem 0;">│ (5m)</div>
+          <div style="display: flex; justify-content: center;">
+            <div style="border: 1px solid var(--accent); padding: 0.3rem 0.6rem; border-radius: 4px; color: var(--accent); font-weight: bold;">Seminar Hall</div>
+          </div>
+        </div>
+
+        <div style="font-size: 0.85rem; color: var(--text-secondary); line-height: 1.6; margin-bottom: 1.5rem; background: rgba(0,0,0,0.2); padding: 0.85rem; border-radius: var(--radius-sm);">
+          <p><strong>• Direct Edge Connection (──):</strong> Takes 1 timeslot (5 minutes).</p>
+          <p><strong>• Multi-Hop Route:</strong> Traveling from Library to Canteen requires passing through Main Block at an intermediate timeslot.</p>
+          <p><strong>• Speed Limit Rule:</strong> A suspect cannot jump 2 graph hops in a single 5-minute interval.</p>
+        </div>
+
+        <button class="btn btn-primary" style="width: 100%; padding: 0.8rem;" onclick="window.GameApp.toggleMapModal(false)">RETURN TO INVESTIGATION</button>
+      </div>
+    </div>
+  `;
+}
+
+function renderSuspectProfileModal() {
+  const ch = state.getCurrentChallenge();
+  const suspect = ch.suspects.find(s => s.id === state.selectedProfileSuspectId) || ch.suspects[0];
+  
+  const claimsHtml = (ch.clues || []).filter(c => c.text.includes(suspect.name) || c.title.includes(suspect.name)).map(c => `
+    <div style="padding: 0.6rem; background: var(--bg-base); border-left: 3px solid var(--accent); margin-bottom: 0.4rem; border-radius: var(--radius-sm); font-size: 0.8rem;">
+      <strong style="color: var(--accent);">${c.title}:</strong> "${c.text}"
+    </div>
+  `).join('') || `<p class="text-muted" style="font-style: italic; font-size: 0.8rem;">No explicit claims logged yet for ${suspect.name}.</p>`;
+
+  return `
+    <div class="modal-overlay" onclick="window.GameApp.closeSuspectProfile()">
+      <div class="modal-content" style="max-width: 580px; text-align: left;" onclick="event.stopPropagation()">
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem; border-bottom: 1px solid var(--border-color); padding-bottom: 0.5rem;">
+          <div>
+            <span class="font-mono text-muted" style="font-size: 0.75rem; color: var(--accent);">CONTEXTUAL SUSPECT DOSSIER</span>
+            <h3 class="font-serif" style="color: var(--text-primary); font-size: 1.5rem; margin-top: 0.1rem;">${suspect.name}</h3>
+          </div>
+          <button class="btn" onclick="window.GameApp.closeSuspectProfile()">✕ CLOSE</button>
+        </div>
+
+        <div style="display: flex; gap: 1.25rem; align-items: flex-start; margin-bottom: 1.25rem;">
+          <div style="width: 80px; height: 80px; background: var(--bg-surface); border: 2px solid var(--accent); border-radius: var(--radius-sm); display: flex; align-items: center; justify-content: center; font-size: 2.2rem; font-family: var(--font-serif); color: var(--accent);">
+            ${suspect.name.charAt(0)}
+          </div>
+          <div style="flex: 1;">
+            <div class="font-mono text-muted" style="font-size: 0.8rem; margin-bottom: 0.3rem;">Role / Identity: <strong style="color: var(--text-primary);">${suspect.role}</strong></div>
+            <div style="margin-bottom: 0.5rem;">
+              <span class="badge badge-warning" style="font-size: 0.75rem;">DISTINCTIVE FEATURE: ${suspect.feature}</span>
+            </div>
+            <p style="font-size: 0.85rem; color: var(--text-secondary); font-style: italic; line-height: 1.4;">
+              "${suspect.featureDesc || 'Student present on campus during the incident window.'}"
+            </p>
+          </div>
+        </div>
+
+        <div style="margin-bottom: 1.5rem;">
+          <h4 class="font-mono text-muted" style="font-size: 0.75rem; color: var(--accent); margin-bottom: 0.5rem;">KNOWN STATEMENTS & EVIDENCE REFERENCES</h4>
+          ${claimsHtml}
+        </div>
+
+        <button class="btn btn-primary" style="width: 100%; padding: 0.75rem;" onclick="window.GameApp.closeSuspectProfile()">RETURN TO TIMELINE BOARD</button>
+      </div>
     </div>
   `;
 }
