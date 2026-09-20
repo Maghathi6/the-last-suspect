@@ -54,6 +54,9 @@ window.GameApp = {
   submitFinalAccusation: (suspectId, locationId, timeId, evidenceId) => {
     state.submitFinalAccusation(suspectId, locationId, timeId, evidenceId);
   },
+  clearAccusationFeedback: () => {
+    state.clearAccusationFeedback();
+  },
   getHint: () => {
     state.getHint();
   },

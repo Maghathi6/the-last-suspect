@@ -609,7 +609,22 @@ export const state = {
     }
   },
 
+  clearAccusationFeedback() {
+    this.accusationFeedback = null;
+    this.notify();
+  },
+
   submitFinalAccusation(suspectId, locationId, timeId, evidenceId) {
+    if (!suspectId || !locationId || !timeId || !evidenceId) {
+      this.accusationFeedback = {
+        success: false,
+        message: "Complete all four accusation fields before submitting."
+      };
+      audio.playContradiction();
+      this.notify();
+      return;
+    }
+
     const ch = this.getCurrentChallenge();
     const sol = ch.solution;
 
@@ -652,7 +667,7 @@ export const state = {
 
       this.accusationFeedback = {
         success: false,
-        message: `WRONG ACCUSATION: ${conflictCategory} (-10 Sleuth Score)`
+        message: `Your accusation does not match the evidence. (${conflictCategory})`
       };
       audio.playContradiction();
     }

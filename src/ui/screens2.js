@@ -344,93 +344,74 @@ export function renderAccusation() {
   }
 
   const ch = state.getCurrentChallenge();
-  const selectedSuspect = state.accused ? ch.suspects.find(s => s.id === state.accused) : null;
 
   const feedback = state.accusationFeedback;
   let feedbackHtml = '';
   if (feedback && !feedback.success) {
     feedbackHtml = `
-      <div class="card" style="max-width: 600px; margin: 1.5rem auto; border-color: var(--error); background: rgba(204,92,92,0.06); text-align: center;">
-        <h3 class="font-serif" style="color: var(--error); font-size: 1.4rem; margin-bottom: 0.5rem;">WRONG ACCUSATION (-10 PTS)</h3>
-        <p style="font-size: 0.95rem; color: var(--text-primary); margin-bottom: 1.25rem;">${feedback.message}</p>
-        <button class="btn" onclick="window.GameApp.navigate('TIMELINE')">[ RETURN TO INVESTIGATION ]</button>
+      <div class="card" style="max-width: 620px; margin: 1.25rem auto; border-color: var(--error); background: rgba(231,76,60,0.12); text-align: center; padding: 1.25rem;">
+        <h3 class="font-serif" style="color: var(--error); font-size: 1.5rem; margin-bottom: 0.5rem;">❌ WRONG ACCUSATION (-10 PTS)</h3>
+        <p style="font-size: 0.95rem; color: var(--text-primary); margin-bottom: 1.25rem; line-height: 1.5;">${feedback.message}</p>
+        <button class="btn btn-primary" onclick="window.GameApp.clearAccusationFeedback()" style="padding: 0.6rem 1.25rem; font-size: 0.9rem;">[ CONTINUE INVESTIGATION ]</button>
       </div>
     `;
   }
 
-  const suspectRadios = ch.suspects.map(s => {
-    const isChecked = state.accused === s.id;
-    return `
-      <label style="display: flex; align-items: center; gap: 0.5rem; padding: 0.5rem; border: 1px solid ${isChecked ? 'var(--error)' : 'var(--border-light)'}; border-radius: var(--radius-sm); cursor: pointer; background: ${isChecked ? 'rgba(231,76,60,0.1)' : 'var(--bg-base)'};" onclick="window.GameApp.setAccused('${s.id}')">
-        <input type="radio" name="accuse-suspect" value="${s.id}" ${isChecked ? 'checked' : ''}>
-        <div>
-          <strong style="font-size: 0.9rem; color: var(--text-primary);">${s.name}</strong>
-          <span style="font-size: 0.75rem; color: var(--text-muted); display: block;">${s.feature}</span>
-        </div>
-      </label>
-    `;
-  }).join('');
-
   return `
     <div style="max-width: 700px; margin: 0 auto; padding: 1rem 0;">
-      <div style="text-align: center; margin-bottom: 2rem;">
-        <span class="font-mono text-muted" style="font-size: 0.75rem; color: var(--error); letter-spacing: 1px;">FINAL DEDUCTION</span>
-        <h2 class="font-serif" style="font-size: 2.5rem; color: var(--error); margin-top: 0.2rem; margin-bottom: 0.5rem;">TIME TO ACCUSE</h2>
-        <p class="text-muted" style="font-style: italic; font-size: 0.95rem;">Select the complete explanation and commit to your final accusation.</p>
+      <div style="text-align: center; margin-bottom: 1.5rem;">
+        <span class="font-mono text-muted" style="font-size: 0.75rem; color: var(--error); letter-spacing: 1px;">FINAL DEDUCTION &mdash; ${ch.title.toUpperCase()}</span>
+        <h2 class="font-serif" style="font-size: 2.2rem; color: var(--error); margin-top: 0.2rem; margin-bottom: 0.4rem;">TIME TO ACCUSE</h2>
+        <p class="text-muted" style="font-style: italic; font-size: 0.9rem;">Select all four fields and commit to your final accusation.</p>
       </div>
 
       ${feedbackHtml}
 
-      <div class="card" style="border-color: var(--error); padding: 2rem; background: var(--bg-base); box-shadow: 0 10px 30px rgba(0,0,0,0.4);">
+      <div class="card" style="border-color: var(--error); padding: 1.75rem; background: var(--bg-base); box-shadow: 0 10px 30px rgba(0,0,0,0.4);">
         
-        <!-- WHO? -->
-        <div style="margin-bottom: 1.5rem;">
-          <label class="font-mono text-muted" style="font-size: 0.8rem; display: block; margin-bottom: 0.6rem; color: var(--error); letter-spacing: 1px;">1. WHO IS RESPONSIBLE?</label>
-          <div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 0.6rem;">
-            ${suspectRadios}
-          </div>
+        <!-- 1. WHO? -->
+        <div style="margin-bottom: 1.25rem;">
+          <label class="font-mono text-muted" style="font-size: 0.8rem; display: block; margin-bottom: 0.5rem; color: var(--error); letter-spacing: 1px;">1. WHO IS RESPONSIBLE? (SUSPECT)</label>
+          <select id="accuse-suspect" style="width: 100%; padding: 0.65rem; background: var(--bg-surface); color: var(--text-primary); border: 1px solid var(--border-light); font-size: 0.9rem; border-radius: var(--radius-sm);" onchange="window.GameApp.setAccused(this.value)">
+            <option value="">-- Select Suspect --</option>
+            ${ch.suspects.map(s => `<option value="${s.id}" ${state.accused === s.id ? 'selected' : ''}>${s.name} (${s.feature})</option>`).join('')}
+          </select>
         </div>
 
-        <!-- WHEN? -->
-        <div style="margin-bottom: 1.5rem;">
-          <label class="font-mono text-muted" style="font-size: 0.8rem; display: block; margin-bottom: 0.6rem; color: var(--accent); letter-spacing: 1px;">2. WHEN DID IT HAPPEN?</label>
-          <div style="display: flex; gap: 0.75rem; flex-wrap: wrap;">
-            ${ch.times.map((t, idx) => `
-              <label style="flex: 1; min-width: 100px; display: flex; align-items: center; justify-content: center; gap: 0.4rem; padding: 0.6rem; border: 1px solid var(--border-light); border-radius: var(--radius-sm); font-size: 0.85rem; cursor: pointer; background: var(--bg-surface);">
-                <input type="radio" name="accuse-time" value="${t}" ${t === ch.solution.time ? 'checked' : (idx === 0 ? 'checked' : '')}>
-                ${t}
-              </label>
-            `).join('')}
-          </div>
+        <!-- 2. WHEN? -->
+        <div style="margin-bottom: 1.25rem;">
+          <label class="font-mono text-muted" style="font-size: 0.8rem; display: block; margin-bottom: 0.5rem; color: var(--accent); letter-spacing: 1px;">2. WHEN DID IT HAPPEN? (TIMESLOT)</label>
+          <select id="accuse-time" style="width: 100%; padding: 0.65rem; background: var(--bg-surface); color: var(--text-primary); border: 1px solid var(--border-light); font-size: 0.9rem; border-radius: var(--radius-sm);">
+            <option value="">-- Select Incident Time --</option>
+            ${ch.times.map(t => `<option value="${t}">${t}</option>`).join('')}
+          </select>
         </div>
 
-        <!-- WHERE? -->
-        <div style="margin-bottom: 1.5rem;">
-          <label class="font-mono text-muted" style="font-size: 0.8rem; display: block; margin-bottom: 0.6rem; color: var(--accent); letter-spacing: 1px;">3. WHERE WAS THE STUDENT?</label>
-          <select id="accuse-loc" style="width: 100%; padding: 0.6rem; background: var(--bg-surface); color: var(--text-primary); border: 1px solid var(--border-light); font-size: 0.9rem; border-radius: var(--radius-sm);">
+        <!-- 3. WHERE? -->
+        <div style="margin-bottom: 1.25rem;">
+          <label class="font-mono text-muted" style="font-size: 0.8rem; display: block; margin-bottom: 0.5rem; color: var(--accent); letter-spacing: 1px;">3. WHERE WAS THE STUDENT? (LOCATION)</label>
+          <select id="accuse-loc" style="width: 100%; padding: 0.65rem; background: var(--bg-surface); color: var(--text-primary); border: 1px solid var(--border-light); font-size: 0.9rem; border-radius: var(--radius-sm);">
+            <option value="">-- Select Location --</option>
             ${ch.locations.map(l => `<option value="${l.id}">${l.name}</option>`).join('')}
           </select>
         </div>
 
-        <!-- OBJECT / EVIDENCE? -->
-        <div style="margin-bottom: 2rem;">
-          <label class="font-mono text-muted" style="font-size: 0.8rem; display: block; margin-bottom: 0.6rem; color: var(--accent); letter-spacing: 1px;">4. KEY EVIDENCE PROOF?</label>
-          <select id="accuse-ev" style="width: 100%; padding: 0.6rem; background: var(--bg-surface); color: var(--text-primary); border: 1px solid var(--border-light); font-size: 0.9rem; border-radius: var(--radius-sm);">
+        <!-- 4. KEY EVIDENCE PROOF? -->
+        <div style="margin-bottom: 1.75rem;">
+          <label class="font-mono text-muted" style="font-size: 0.8rem; display: block; margin-bottom: 0.5rem; color: var(--accent); letter-spacing: 1px;">4. KEY EVIDENCE PROOF? (EVIDENCE)</label>
+          <select id="accuse-ev" style="width: 100%; padding: 0.65rem; background: var(--bg-surface); color: var(--text-primary); border: 1px solid var(--border-light); font-size: 0.9rem; border-radius: var(--radius-sm);">
+            <option value="">-- Select Key Evidence Item --</option>
             ${ch.clues.map(c => `<option value="${c.id}">${c.title}</option>`).join('')}
           </select>
         </div>
 
-        <button class="btn btn-primary" style="background: var(--error); border-color: var(--error); width: 100%; padding: 1rem; font-size: 1.15rem; letter-spacing: 1px;" 
+        <button class="btn btn-primary" type="button" style="background: var(--error); border-color: var(--error); width: 100%; padding: 1rem; font-size: 1.1rem; letter-spacing: 1px; font-weight: bold; cursor: pointer;" 
           onclick="
+            const sus = document.getElementById('accuse-suspect').value;
+            const time = document.getElementById('accuse-time').value;
             const loc = document.getElementById('accuse-loc').value;
-            const timeEl = document.querySelector('input[name=accuse-time]:checked');
-            const time = timeEl ? timeEl.value : '${ch.solution.time}';
             const ev = document.getElementById('accuse-ev').value;
-            if (state.accused) {
-              window.GameApp.submitFinalAccusation(state.accused, loc, time, ev);
-            } else {
-              alert('Please select a suspect first!');
-            }
+            window.GameApp.submitFinalAccusation(sus, loc, time, ev);
           ">
           [ MAKE ACCUSATION ]
         </button>
@@ -479,7 +460,7 @@ function renderCaseResolution() {
   return `
     <div style="max-width: 850px; margin: 0 auto; padding: 1rem 0;">
       <div style="text-align: center; margin-bottom: 2rem;">
-        <h1 class="font-serif" style="font-size: 3.2rem; color: var(--success); margin-bottom: 0.25rem;">🎉 CASE SOLVED</h1>
+        <h1 class="font-serif" style="font-size: 3.2rem; color: var(--success); margin-bottom: 0.25rem;">✅ CASE SOLVED!</h1>
         <h2 class="font-serif" style="color: var(--accent); font-size: 1.6rem;">${ch.title}</h2>
       </div>
 
